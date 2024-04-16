@@ -1,8 +1,14 @@
+#ifdef _WIN32
+#include <windows.h>
+#define MSG_CONFIRM 0
+#endif
+#ifdef linux
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <iostream>
 #include <unistd.h>
+#endif
+#include <iostream>
 #include <thread>
 #include <vector>
 #include <sstream>
@@ -42,7 +48,7 @@ public:
     }
 
     int recv(int* data, unsigned data_size) {
-        int recived_count = ::recv(sock_desc_, data, data_size, 0);
+        int recived_count = ::recv(sock_desc_, reinterpret_cast<char*>(data), data_size, 0);
         return recived_count;
     }
 
@@ -70,12 +76,17 @@ public:
     }
 
     void send(int message) {
-        ::send(sock_desc_, &message, sizeof(int), MSG_CONFIRM);
+        ::send(sock_desc_, reinterpret_cast<char*>(&message), sizeof(int), MSG_CONFIRM);
     }
 
     ~Socket() {
         if(sock_desc_ > 0) {
+            #ifdef _WIN32
+            closesocket(sock_desc_);
+            #endif
+            #ifdef linux
             close(sock_desc_);
+            #endif
         }
     }
 
@@ -86,7 +97,7 @@ private:
 
 enum class Command {
     ADD,
-    DELETE,
+    DEL,
     FIND,
     VIEW,
     UNKNOWN
@@ -97,7 +108,7 @@ Command getCommand(const std::string& s_command) {
     if(s_command == "ADD") {
         return Command::ADD;
     } else if (s_command == "DELETE") {
-        return Command::DELETE;
+        return Command::DEL;
     } else if (s_command == "FIND") {
         return Command::FIND;
     } else if (s_command == "VIEW") {
@@ -279,7 +290,7 @@ public:
             case Command::ADD:
                 return addContact(input);
                 break;
-            case Command::DELETE:
+            case Command::DEL:
                 return deleteContact(input);
                 break;
             case Command::FIND:
@@ -402,6 +413,10 @@ private:
 };
 
 int main() {
+    #ifdef _WIN32
+    WSADATA wsdata; 
+    WSAStartup(0x0101,&wsdata);
+    #endif 
     std::ifstream config;
     config.open("config.txt");
     std::string param;
@@ -412,10 +427,13 @@ int main() {
     }
     config.close();
 
-
+    std::cout << "Creating server on port " << port << std::endl;
     Server server = Server(port);
     server.listen();
     while(1) {
         server.accept();
     }
+    #ifdef _WIN32
+    WSACleanup();
+    #endif
 }

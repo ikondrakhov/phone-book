@@ -1,3 +1,4 @@
 .vscode
 /server/contacts.db
 /server/build
+/build
