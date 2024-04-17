@@ -13,6 +13,8 @@ Command getCommand(const std::string& s_command) {
         return Command::FIND;
     } else if (s_command == "VIEW") {
         return Command::VIEW;
+    } else if (s_command == "VIEWALL") {
+        return Command::VIEWALL;
     }
     return Command::UNKNOWN;
 }
@@ -22,6 +24,7 @@ ConnectionProcessor::ConnectionProcessor() {
     command_functions[Command::DEL] = &ConnectionProcessor::deleteContact;
     command_functions[Command::FIND] = &ConnectionProcessor::findContact;
     command_functions[Command::VIEW] = &ConnectionProcessor::viewContact;
+    command_functions[Command::VIEWALL] = &ConnectionProcessor::viewAll;
 }
 
 std::string ConnectionProcessor::process_message(const std::string& message) {
@@ -37,6 +40,20 @@ std::string ConnectionProcessor::process_message(const std::string& message) {
         std::cerr << "Unknown command" << std::endl;
     }
     return "Error. Unknow command";
+}
+
+std::string ConnectionProcessor::viewAll(std::stringstream& input) {
+    std::string result = "";
+    const std::vector<Contact>& contacts = storage->findAll();
+    bool is_first = true;
+    for(const Contact& c: contacts) {
+        if(!is_first) {
+            result += ";";
+        }
+        result += std::string(c);
+        is_first = false;
+    }
+    return result;
 }
 
 std::string ConnectionProcessor::addContact(std::stringstream& input) {

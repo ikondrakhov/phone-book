@@ -47,6 +47,16 @@ std::optional<Contact> FileContactsStorage::saveContact(Contact& c) {
     return c;
 }
 
+std::vector<Contact> FileContactsStorage::findAll() {
+    std::vector<Contact> result;
+    for(auto [id, is_taken]: _is_taken_map) {
+        if(is_taken) {
+            result.push_back(this->findContactById(id).value());
+        }
+    }
+    return result;
+}
+
 std::optional<Contact> FileContactsStorage::deleteContactById(unsigned contact_id) {
     std::optional<Contact> c = findContactById(contact_id);
     if(!c.has_value()) {

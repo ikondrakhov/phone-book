@@ -16,6 +16,7 @@ public:
     virtual std::optional<Contact> deleteContactById(unsigned contact_id);
     virtual std::vector<Contact> findContactBy(const std::string& property_name, const std::string& property_value);
     virtual std::optional<Contact> findContactById(unsigned contact_id);
+    virtual std::vector<Contact> findAll();
     ~FileContactsStorage();
 
 private:

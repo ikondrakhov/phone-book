@@ -15,7 +15,7 @@ std::string Contact::operator [](const std::string& key) const {
     return key_value.at(key);
 }
 
-Contact::operator std::string() {
+Contact::operator std::string() const {
     std::string result = "";
     result += "id:"s + std::to_string(id) + ",";
     result += "name:"s + name + ",";

@@ -11,6 +11,6 @@ struct Contact {
     char description[100];
 
     std::string operator [](const std::string& key) const;
-    operator std::string();
+    operator std::string() const;
     void add(const std::string& key, const std::string& value);
 };

@@ -57,6 +57,10 @@ class Client:
         self.send("VIEW " + str(contactId))
         return self.recv()
 
+    def viewAll(self):
+        self.send("VIEWALL")
+        return self.recv()
+
 
 class ClientCommandProcessor:
     def __init__(self, client):
@@ -91,12 +95,11 @@ class ClientCommandProcessor:
         response = self.__client.viewContact(contactId)
         self.pretty_print(response)
 
-#TODO: Add view all command to server
     def processViewAll(self):
-        for i in range(100):
-            response = self.__client.viewContact(i)
-            if not "not found" in str(response):
-                self.pretty_print(response)
+        response = self.__client.viewAll()
+        print(response)
+        for contact in str(response).split(';'):
+            self.pretty_print(contact)
 
 if __name__ == "__main__":
     command = "Start"

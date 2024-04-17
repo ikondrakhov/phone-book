@@ -12,6 +12,7 @@ enum class Command {
     DEL,
     FIND,
     VIEW,
+    VIEWALL,
     UNKNOWN
 };
 
@@ -25,6 +26,7 @@ public:
     std::string deleteContact(std::stringstream& input);
     std::string findContact(std::stringstream& input);
     std::string viewContact(std::stringstream& input);
+    std::string viewAll(std::stringstream& input);
 
 private:
     typedef std::string (ConnectionProcessor::*method)(std::stringstream&);
