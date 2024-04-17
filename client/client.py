@@ -91,6 +91,7 @@ class ClientCommandProcessor:
         response = self.__client.viewContact(contactId)
         self.pretty_print(response)
 
+#TODO: Add view all command to server
     def processViewAll(self):
         for i in range(100):
             response = self.__client.viewContact(i)
@@ -115,7 +116,7 @@ if __name__ == "__main__":
         command = input("Enter command: ")
         if command == "END":
             break
-        result = commands_map.get(command, lambda: "Invalid")
+        result = commands_map.get(command, lambda: "Invalid")()
         if(result == "Invalid"):
             print("Unknown command")
             print("Avalible commands: ADD, DELETE, FIND, VIEW, VIEWALL")

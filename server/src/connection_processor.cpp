@@ -17,28 +17,26 @@ Command getCommand(const std::string& s_command) {
     return Command::UNKNOWN;
 }
 
+ConnectionProcessor::ConnectionProcessor() {
+    command_functions[Command::ADD] = &ConnectionProcessor::addContact;
+    command_functions[Command::DEL] = &ConnectionProcessor::deleteContact;
+    command_functions[Command::FIND] = &ConnectionProcessor::findContact;
+    command_functions[Command::VIEW] = &ConnectionProcessor::viewContact;
+}
+
 std::string ConnectionProcessor::process_message(const std::string& message) {
     std::stringstream input(message);
     std::string command;
     Contact c = {};
     input >> command;
-    switch(getCommand(command)) {
-        case Command::ADD:
-            return addContact(input);
-            break;
-        case Command::DEL:
-            return deleteContact(input);
-            break;
-        case Command::FIND:
-            return findContact(input);
-            break;
-        case Command::VIEW:
-            return viewContact(input);
-            break;
-        default:
-            return "Error. Unknow command";
+    
+    auto x = command_functions.find(getCommand(command));
+    if(x != command_functions.end()) {
+        return (this->*(x->second))(input);
+    } else {
+        std::cerr << "Unknown command" << std::endl;
     }
-    return "Ok. Success " + std::string(c);
+    return "Error. Unknow command";
 }
 
 std::string ConnectionProcessor::addContact(std::stringstream& input) {

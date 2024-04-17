@@ -19,6 +19,7 @@ Command getCommand(const std::string& s_command);
 
 class ConnectionProcessor {
 public:
+    ConnectionProcessor();
     std::string process_message(const std::string& message);
     std::string addContact(std::stringstream& input);
     std::string deleteContact(std::stringstream& input);
@@ -26,5 +27,8 @@ public:
     std::string viewContact(std::stringstream& input);
 
 private:
+    typedef std::string (ConnectionProcessor::*method)(std::stringstream&);
+    
     std::unique_ptr<ContactsStorage> storage = std::make_unique<FileContactsStorage>("contacts.db");
+    std::map<Command, method> command_functions;
 };
