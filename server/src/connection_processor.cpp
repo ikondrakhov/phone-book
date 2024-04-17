@@ -45,6 +45,8 @@ std::string ConnectionProcessor::addContact(std::stringstream& input) {
     Contact contact = {};
     std::string message;
     std::getline(input, message);
+    
+    message = message.substr(message.find_first_not_of(' '));
 
     std::string current_str = "";
     std::string key;

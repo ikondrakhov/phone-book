@@ -61,6 +61,10 @@ class Client:
 class ClientCommandProcessor:
     def __init__(self, client):
         self.__client = client
+    
+    def pretty_print(self, response):
+        for elem in str(response).split(','):
+            print(elem)
 
     def processAddCommand(self):
         name = input("Enter name: ")
@@ -69,29 +73,29 @@ class ClientCommandProcessor:
         phoneNumber = input("Enter phone number: ")
         description = input("Enter description: ")
         response = self.__client.addContact(Contact(name, surname, middlename, phoneNumber, description))
-        print(response)
+        self.pretty_print(response)
 
     def processDeleteCommand(self):
         contactId = int(input("Enter contact Id: "))
         response = self.__client.deleteContact(contactId)
-        print(response)
+        self.pretty_print(response)
 
     def processFindCommand(self):
         propertyName = input("Enter property name: ")
         value = input("Enter property value: ")
         response = self.__client.findContact(propertyName, value)
-        print(response)
+        self.pretty_print(response)
     
     def processViewCommand(self):
         contactId = int(input("Enter contact id: "))
         response = self.__client.viewContact(contactId)
-        print(response)
+        self.pretty_print(response)
 
     def processViewAll(self):
         for i in range(100):
             response = self.__client.viewContact(i)
             if not "not found" in str(response):
-                print(response)
+                self.pretty_print(response)
 
 if __name__ == "__main__":
     command = "Start"
@@ -99,19 +103,19 @@ if __name__ == "__main__":
     client = Client("localhost", 8080)
     clientCommandProcessor = ClientCommandProcessor(client)
 
-    while command != 'End':
+    commands_map = {
+        "ADD": clientCommandProcessor.processAddCommand,
+        "DELETE": clientCommandProcessor.processDeleteCommand,
+        "FIND": clientCommandProcessor.processFindCommand,
+        "VIEW": clientCommandProcessor.processViewCommand,
+        "VIEWALL": clientCommandProcessor.processViewAll
+    }
+
+    while True:
         command = input("Enter command: ")
-        match command:
-            case "ADD":
-                clientCommandProcessor.processAddCommand()
-            case "DELETE":
-                clientCommandProcessor.processDeleteCommand()
-            case "FIND":
-                clientCommandProcessor.processFindCommand()
-            case "VIEW":
-                clientCommandProcessor.processViewCommand()
-            case "VIEWALL":
-                clientCommandProcessor.processViewAll()
-            case _:
-                print("Unknown command")
-                print("Availible commands: ADD, DELETE, FIND, VIEW")
+        if command == "END":
+            break
+        result = commands_map.get(command, lambda: "Invalid")
+        if(result == "Invalid"):
+            print("Unknown command")
+            print("Avalible commands: ADD, DELETE, FIND, VIEW, VIEWALL")
