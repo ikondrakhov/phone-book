@@ -25,5 +25,5 @@ private:
     unsigned next_id = 0;
     std::mutex file_mutex;
 
-    bool isMatch(const Contact& c, const std::string& property_name, const std::string& property_value);
+    bool isMatch(const Contact& c, const std::string& property_name, const std::string& property_value) const;
 };

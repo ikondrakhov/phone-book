@@ -14,6 +14,7 @@ public:
     void listen();
     void process_connection(Socket&& s);
     void accept();
+    ~Server();
 
 private:
     Socket socket_;

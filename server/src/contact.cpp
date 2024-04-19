@@ -29,13 +29,18 @@ Contact::operator std::string() const {
 void Contact::add(const std::string& key, const std::string& value) {
     if(key == "name") {
         strcpy(name, value.c_str());
+        name[std::min(sizeof(name) - 1, value.size())] = '\0';
     } else if (key == "surname") {
         strcpy(surname, value.c_str());
+        surname[std::min(sizeof(surname) - 1, value.size())] = '\0';
     } else if (key == "middlename") {
         strcpy(middlename, value.c_str());
+        middlename[std::min(sizeof(middlename) - 1, value.size())] = '\0';
     } else if (key == "phoneNumber") {
         strcpy(phoneNumber, value.c_str());
+        phoneNumber[std::min(sizeof(phoneNumber) - 1, value.size())] = '\0';
     } else if (key == "description") {
         strcpy(description, value.c_str());
+        description[std::min(sizeof(description) - 1, value.size())] = '\0';
     }
 }

@@ -30,5 +30,12 @@ void Server::process_connection(Socket&& s) {
 void Server::accept() {
     Socket clientSocket = socket_.accept();
     std::cout << "New connection" << std::endl;
+    //TODO: Подумать когда удалять потоки из вектора
     thread_pool.push_back(std::thread(&Server::process_connection, this, std::move(clientSocket)));
+}
+
+Server::~Server() {
+    for(auto& thread: thread_pool) {
+        thread.join();
+    }
 }

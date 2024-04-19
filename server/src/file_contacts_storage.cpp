@@ -28,21 +28,14 @@ FileContactsStorage::FileContactsStorage(const std::string& file_path) {
 }
 
 std::optional<Contact> FileContactsStorage::saveContact(Contact& c) {
+    std::lock_guard<std::mutex> guard(this->file_mutex);
     next_id = 0;
     while(_is_taken_map[next_id]) {
         next_id++;
     }
-    std::cout << "Added contact with id: " << next_id << std::endl;
-    std::cout << "Contact desc: " << c.description << std::endl;
     c.id = next_id++;
     _file.seekp(std::ios::beg + c.id * sizeof(c));
-    std::cout << "File position: " << _file.tellp() << std::endl;
     _file.write(reinterpret_cast<const char*>(&c), sizeof(Contact));
-    if(_file.good()) {
-        std::cout << "File is good" << std::endl;
-    } else {
-        std::cout << "File is not good" << std::endl;
-    }
     _is_taken_map[c.id] = true;
     return c;
 }
@@ -59,6 +52,7 @@ std::vector<Contact> FileContactsStorage::findAll() {
 
 std::optional<Contact> FileContactsStorage::deleteContactById(unsigned contact_id) {
     std::optional<Contact> c = findContactById(contact_id);
+    std::lock_guard<std::mutex> guard(this->file_mutex);
     if(!c.has_value()) {
         return std::nullopt;
     }
@@ -72,6 +66,7 @@ std::optional<Contact> FileContactsStorage::deleteContactById(unsigned contact_i
     
 std::vector<Contact> FileContactsStorage::findContactBy(const std::string& property_name, const std::string& property_value) {
     std::vector<Contact> result;
+    std::lock_guard<std::mutex> guard(this->file_mutex);
     for(auto [id, is_taken]: _is_taken_map) {
         if(is_taken) {
             Contact c;
@@ -87,16 +82,12 @@ std::vector<Contact> FileContactsStorage::findContactBy(const std::string& prope
 
 std::optional<Contact> FileContactsStorage::findContactById(unsigned contact_id) {
     Contact c = {};
+    std::lock_guard<std::mutex> guard(this->file_mutex);
     if(!_is_taken_map[contact_id]) {
         return std::nullopt;
     }
     _file.seekg(_file.beg + contact_id * sizeof(Contact));
     _file.read(reinterpret_cast<char*>(&c), sizeof(Contact));
-    if(_file.good()) {
-        std::cout << "Found contact by id: " << std::string(c) << std::endl;
-    } else {
-        std::cout << "File is not good" << std::endl;
-    }
     return c;
 }
 
@@ -104,7 +95,7 @@ FileContactsStorage::~FileContactsStorage() {
     _file.close();
 }
 
-bool FileContactsStorage::isMatch(const Contact& c, const std::string& property_name, const std::string& property_value) {
+bool FileContactsStorage::isMatch(const Contact& c, const std::string& property_name, const std::string& property_value) const {
     if(property_name == "description") {
         return c[property_name].find(property_value) != std::string::npos;
     }
