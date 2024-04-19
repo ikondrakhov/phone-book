@@ -34,15 +34,16 @@ int Socket::recv(int* data, unsigned data_size) const {
 
 int Socket::recv(std::string& data, unsigned data_size) const {
     int recived_total = 0;
-    std::vector<char> result;
+    std::string result;
     char buffer[1024];
     while(recived_total < data_size) {
         int recived_count = ::recv(sock_desc_, buffer, data_size, 0);
         if(recived_count > 0) {
-            result.insert(result.end(), buffer, buffer + recived_count);
+            result += buffer;
             recived_total += recived_count;
         }
     }
+    result += '\0';
     if(result.size() > 0) {
         data = result.data();
     } else {
