@@ -74,6 +74,7 @@ std::vector<Contact> FileContactsStorage::findContactBy(const std::string& prope
             _file.read(reinterpret_cast<char*>(&c), sizeof(c));
             if(isMatch(c, property_name, property_value)) {
                 result.push_back(c);
+                return result;
             }
         }
     }
